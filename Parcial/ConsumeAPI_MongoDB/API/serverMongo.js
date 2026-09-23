@@ -5,7 +5,7 @@ const cors = require("cors");
 const app=express();
 app.use(cors());
 
-const uri="mongodb+srv://<username>:<password>@cluster0.meytpgo.mongodb.net/?appName=Cluster0"
+const uri="mongodb://<username>:<password>@ac-dx5h3an-shard-00-00.meytpgo.mongodb.net:27017,ac-dx5h3an-shard-00-01.meytpgo.mongodb.net:27017,ac-dx5h3an-shard-00-02.meytpgo.mongodb.net:27017/?ssl=true&replicaSet=atlas-u3faar-shard-0&authSource=admin&appName=Cluster0"
 const client= new MongoClient(uri);
 
 async function main(){
@@ -21,7 +21,7 @@ async function main(){
         res.json(data);
     });
 
-    app.listen(4000, ()=> console.log("Server running at http://localhost"))
+    app.listen(4000, ()=> console.log("Server running at http://localhost:4000"))
 }
 
 main().catch(console.error);
