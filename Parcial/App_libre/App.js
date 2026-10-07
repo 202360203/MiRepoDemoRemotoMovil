@@ -25,9 +25,9 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 
 
-// --------------------------------------------------
+// ==================================================
 // CONFIGURACIÓN
-// --------------------------------------------------
+// ==================================================
 
 const Drawer = createDrawerNavigator();
 
@@ -45,20 +45,30 @@ const colores = {
 };
 
 
-// --------------------------------------------------
+// ==================================================
 // PANTALLA DE CARGA
-// --------------------------------------------------
+// ==================================================
 
 function LoadingScreen() {
-  const escala = useRef(new Animated.Value(0.7)).current;
-  const opacidad = useRef(new Animated.Value(0)).current;
-  const rotacion = useRef(new Animated.Value(0)).current;
+
+  const escala = useRef(
+    new Animated.Value(0.7)
+  ).current;
+
+  const opacidad = useRef(
+    new Animated.Value(0)
+  ).current;
+
+  const rotacion = useRef(
+    new Animated.Value(0)
+  ).current;
+
 
   useEffect(() => {
 
-    // Animación de escala
     Animated.loop(
       Animated.sequence([
+
         Animated.timing(escala, {
           toValue: 1,
           duration: 800,
@@ -70,11 +80,11 @@ function LoadingScreen() {
           duration: 800,
           useNativeDriver: true,
         }),
+
       ])
     ).start();
 
 
-    // Aparición
     Animated.timing(opacidad, {
       toValue: 1,
       duration: 1000,
@@ -82,7 +92,6 @@ function LoadingScreen() {
     }).start();
 
 
-    // Rotación
     Animated.loop(
       Animated.timing(rotacion, {
         toValue: 1,
@@ -101,20 +110,24 @@ function LoadingScreen() {
 
 
   return (
+
     <View style={styles.loadingContainer}>
 
       <Animated.View
         style={{
           opacity: opacidad,
+
           transform: [
             { scale: escala },
             { rotate: giro },
           ],
         }}
       >
+
         <Text style={styles.loadingEmoji}>
           🍲
         </Text>
+
       </Animated.View>
 
 
@@ -146,24 +159,22 @@ function LoadingScreen() {
 }
 
 
-// --------------------------------------------------
-// APP PRINCIPAL
-// --------------------------------------------------
+// ==================================================
+// APP
+// ==================================================
 
 export default function App() {
 
   const [recetas, setRecetas] = useState([]);
 
-  const [cargando, setCargando] = useState(true);
-
-  const [recetaSeleccionada, setRecetaSeleccionada] =
-    useState(null);
-
-  const [modalVisible, setModalVisible] =
-    useState(false);
+  const [cargando, setCargando] =
+    useState(true);
 
 
-  // Cargar recetas al iniciar
+  // ================================================
+  // CARGAR RECETAS
+  // ================================================
+
   useEffect(() => {
     cargarRecetas();
   }, []);
@@ -174,10 +185,17 @@ export default function App() {
     try {
 
       const datos =
-        await AsyncStorage.getItem(STORAGE_KEY);
+        await AsyncStorage.getItem(
+          STORAGE_KEY
+        );
+
 
       if (datos) {
-        setRecetas(JSON.parse(datos));
+
+        setRecetas(
+          JSON.parse(datos)
+        );
+
       }
 
     } catch (error) {
@@ -195,11 +213,13 @@ export default function App() {
   }
 
 
-  // --------------------------------------------------
+  // ================================================
   // GUARDAR RECETAS
-  // --------------------------------------------------
+  // ================================================
 
-  async function guardarRecetas(nuevasRecetas) {
+  async function guardarRecetas(
+    nuevasRecetas
+  ) {
 
     try {
 
@@ -208,7 +228,9 @@ export default function App() {
         JSON.stringify(nuevasRecetas)
       );
 
+
       setRecetas(nuevasRecetas);
+
 
       return true;
 
@@ -216,7 +238,7 @@ export default function App() {
 
       Alert.alert(
         'Error',
-        'No se pudo guardar la receta.'
+        'No se pudieron guardar los cambios.'
       );
 
       return false;
@@ -224,9 +246,9 @@ export default function App() {
   }
 
 
-  // --------------------------------------------------
+  // ================================================
   // AGREGAR RECETA
-  // --------------------------------------------------
+  // ================================================
 
   async function agregarReceta(
     receta,
@@ -238,40 +260,101 @@ export default function App() {
       ...recetas,
     ];
 
+
     const guardada =
-      await guardarRecetas(nuevasRecetas);
+      await guardarRecetas(
+        nuevasRecetas
+      );
 
 
     if (guardada) {
 
       Alert.alert(
         '¡Receta guardada!',
-        'La receta se agregó correctamente a tu recetario.'
+        'La receta se agregó correctamente.'
       );
 
-      navigation.navigate('Inicio');
+
+      navigation.navigate(
+        'Inicio'
+      );
     }
   }
 
 
-  // --------------------------------------------------
-  // ELIMINAR RECETA
-  // --------------------------------------------------
+  // ================================================
+  // EDITAR RECETA
+  // ================================================
 
-  function eliminarReceta(id) {
+  async function editarReceta(
+    recetaActualizada,
+    navigation
+  ) {
+
+    const nuevasRecetas =
+      recetas.map((receta) => {
+
+        if (
+          receta.id ===
+          recetaActualizada.id
+        ) {
+
+          return recetaActualizada;
+
+        }
+
+        return receta;
+
+      });
+
+
+    const actualizada =
+      await guardarRecetas(
+        nuevasRecetas
+      );
+
+
+    if (actualizada) {
+
+      Alert.alert(
+        '¡Receta actualizada!',
+        'Los cambios se guardaron correctamente.'
+      );
+
+
+      navigation.navigate(
+        'Inicio'
+      );
+    }
+  }
+
+
+  // ================================================
+  // ELIMINAR RECETA
+  // ================================================
+
+  async function eliminarReceta(
+    id,
+    navigation
+  ) {
 
     Alert.alert(
+
       'Eliminar receta',
+
       '¿Seguro que quieres eliminar esta receta?',
 
       [
+
         {
           text: 'Cancelar',
           style: 'cancel',
         },
 
         {
+
           text: 'Eliminar',
+
           style: 'destructive',
 
           onPress: async () => {
@@ -282,47 +365,45 @@ export default function App() {
                   receta.id !== id
               );
 
+
             const eliminada =
-              await guardarRecetas(nuevasRecetas);
+              await guardarRecetas(
+                nuevasRecetas
+              );
 
 
             if (eliminada) {
 
-              setModalVisible(false);
+              navigation.navigate(
+                'Inicio'
+              );
 
-              setRecetaSeleccionada(null);
             }
+
           },
+
         },
+
       ]
+
     );
   }
 
 
-  // --------------------------------------------------
-  // ABRIR RECETA
-  // --------------------------------------------------
-
-  function abrirReceta(receta) {
-
-    setRecetaSeleccionada(receta);
-
-    setModalVisible(true);
-  }
-
-
-  // --------------------------------------------------
-  // PANTALLA DE CARGA
-  // --------------------------------------------------
+  // ================================================
+  // LOADING
+  // ================================================
 
   if (cargando) {
+
     return <LoadingScreen />;
+
   }
 
 
-  // --------------------------------------------------
-  // INTERFAZ PRINCIPAL
-  // --------------------------------------------------
+  // ================================================
+  // NAVEGACIÓN
+  // ================================================
 
   return (
 
@@ -332,10 +413,12 @@ export default function App() {
 
 
       <Drawer.Navigator
+
         screenOptions={{
 
           headerStyle: {
-            backgroundColor: colores.fondo,
+            backgroundColor:
+              colores.fondo,
           },
 
           headerTintColor:
@@ -358,204 +441,141 @@ export default function App() {
           },
 
         }}
+
       >
 
-        <Drawer.Screen name="Inicio">
+        {/* ========================================
+            INICIO
+        ======================================== */}
 
-          {(props) => (
+        <Drawer.Screen
+          name="Inicio"
+          component={InicioScreen}
+        />
 
-            <InicioScreen
-              {...props}
 
-              recetas={recetas}
-
-              abrirReceta={abrirReceta}
-            />
-
-          )}
-
-        </Drawer.Screen>
-
+        {/* ========================================
+            NUEVA RECETA
+        ======================================== */}
 
         <Drawer.Screen name="Nueva receta">
 
           {(props) => (
 
             <NuevaRecetaScreen
+
               {...props}
 
-              onGuardar={agregarReceta}
+              modo="nueva"
+
+              onGuardar={
+                agregarReceta
+              }
+
             />
 
           )}
 
         </Drawer.Screen>
 
-      </Drawer.Navigator>
 
+        {/* ========================================
+            RECETAS GUARDADAS
+        ======================================== */}
 
-      {/* -------------------------------------------
-          MODAL DETALLE DE RECETA
-      -------------------------------------------- */}
+        {recetas.map((receta) => (
 
-      <Modal
-        visible={modalVisible}
-        animationType="slide"
-        onRequestClose={() =>
-          setModalVisible(false)
-        }
-      >
+          <Drawer.Screen
 
-        <View style={styles.modal}>
+            key={receta.id}
 
-          <ScrollView>
+            name={`receta-${receta.id}`}
 
-            <TouchableOpacity
-              style={styles.botonVolver}
+            options={{
+              title: receta.nombre,
+              drawerLabel: receta.nombre,
+            }}
 
-              onPress={() =>
-                setModalVisible(false)
-              }
-            >
+          >
 
-              <Text
-                style={styles.textoBotonVolver}
-              >
-                ← Volver al recetario
-              </Text>
+            {(props) => (
 
-            </TouchableOpacity>
+              <DetalleRecetaScreen
 
+                {...props}
 
-            {recetaSeleccionada && (
+                receta={receta}
 
-              <>
+                onEditar={() => {
 
-                {/* FOTO */}
+                  props.navigation.navigate(
+                    `editar-${receta.id}`
+                  );
 
-                {recetaSeleccionada.foto ? (
+                }}
 
-                  <Image
-                    source={{
-                      uri: recetaSeleccionada.foto,
-                    }}
+                onEliminar={() => {
 
-                    style={styles.fotoDetalle}
-                  />
+                  eliminarReceta(
+                    receta.id,
+                    props.navigation
+                  );
 
-                ) : null}
+                }}
 
-
-                {/* NOMBRE */}
-
-                <Text
-                  style={styles.tituloDetalle}
-                >
-                  {recetaSeleccionada.nombre}
-                </Text>
-
-
-                {/* DESCRIPCIÓN */}
-
-                {recetaSeleccionada.descripcion ? (
-
-                  <Text
-                    style={styles.descripcion}
-                  >
-                    {recetaSeleccionada.descripcion}
-                  </Text>
-
-                ) : null}
-
-
-                {/* INGREDIENTES */}
-
-                <Text
-                  style={styles.subtitulo}
-                >
-                  🥕 Ingredientes
-                </Text>
-
-
-                {recetaSeleccionada.ingredientes.map(
-                  (ingrediente, indice) => (
-
-                    <Text
-                      key={indice}
-                      style={styles.elementoLista}
-                    >
-                      • {ingrediente}
-                    </Text>
-
-                  )
-                )}
-
-
-                {/* PREPARACIÓN */}
-
-                <Text
-                  style={styles.subtitulo}
-                >
-                  👨‍🍳 Preparación
-                </Text>
-
-
-                {recetaSeleccionada.pasos.map(
-                  (paso, indice) => (
-
-                    <View
-                      key={indice}
-                      style={styles.pasoDetalle}
-                    >
-
-                      <Text
-                        style={styles.numeroPaso}
-                      >
-                        {indice + 1}
-                      </Text>
-
-
-                      <Text
-                        style={styles.textoPaso}
-                      >
-                        {paso}
-                      </Text>
-
-                    </View>
-
-                  )
-                )}
-
-
-                {/* ELIMINAR */}
-
-                <TouchableOpacity
-                  style={styles.botonEliminar}
-
-                  onPress={() =>
-                    eliminarReceta(
-                      recetaSeleccionada.id
-                    )
-                  }
-                >
-
-                  <Text
-                    style={styles.textoBoton}
-                  >
-                    Eliminar receta
-                  </Text>
-
-                </TouchableOpacity>
-
-              </>
+              />
 
             )}
 
-          </ScrollView>
+          </Drawer.Screen>
 
-        </View>
+        ))}
 
-      </Modal>
+
+        {/* ========================================
+            PANTALLAS DE EDICIÓN
+        ======================================== */}
+
+        {recetas.map((receta) => (
+
+          <Drawer.Screen
+
+            key={`editar-${receta.id}`}
+
+            name={`editar-${receta.id}`}
+
+            options={{
+              title: `Editar: ${receta.nombre}`,
+              drawerItemStyle: {
+                display: 'none',
+              },
+            }}
+
+          >
+
+            {(props) => (
+
+              <NuevaRecetaScreen
+
+                {...props}
+
+                modo="editar"
+
+                recetaEditar={receta}
+
+                onGuardar={
+                  editarReceta
+                }
+
+              />
+
+            )}
+
+          </Drawer.Screen>
+
+        ))}
+
+      </Drawer.Navigator>
 
     </NavigationContainer>
   );
@@ -563,14 +583,65 @@ export default function App() {
 
 
 // ==================================================
-// PANTALLA INICIO
+// INICIO
 // ==================================================
 
 function InicioScreen({
   navigation,
-  recetas,
-  abrirReceta,
 }) {
+
+  const [recetas, setRecetas] =
+    useState([]);
+
+
+  useEffect(() => {
+
+    cargarRecetas();
+
+  }, []);
+
+
+  async function cargarRecetas() {
+
+    try {
+
+      const datos =
+        await AsyncStorage.getItem(
+          STORAGE_KEY
+        );
+
+
+      if (datos) {
+
+        setRecetas(
+          JSON.parse(datos)
+        );
+
+      }
+
+    } catch (error) {
+
+      console.log(error);
+
+    }
+  }
+
+
+  // Cuando regresamos a Inicio
+  // actualizamos las recetas.
+
+  useEffect(() => {
+
+    const unsubscribe =
+      navigation.addListener(
+        'focus',
+        cargarRecetas
+      );
+
+    return unsubscribe;
+
+  }, [navigation]);
+
 
   return (
 
@@ -592,14 +663,16 @@ function InicioScreen({
       </Text>
 
 
-      {/* BOTÓN NUEVA RECETA */}
-
       <TouchableOpacity
+
         style={styles.botonPrincipal}
 
         onPress={() =>
-          navigation.navigate('Nueva receta')
+          navigation.navigate(
+            'Nueva receta'
+          )
         }
+
       >
 
         <Text style={styles.textoBoton}>
@@ -609,16 +682,13 @@ function InicioScreen({
       </TouchableOpacity>
 
 
-      {/* CONTADOR */}
-
       <Text style={styles.subtitulo}>
         Recetas guardadas ({recetas.length})
       </Text>
 
 
-      {/* LISTA */}
-
       <FlatList
+
         data={recetas}
 
         keyExtractor={(item) =>
@@ -662,18 +732,21 @@ function InicioScreen({
         renderItem={({ item }) => (
 
           <TouchableOpacity
+
             style={styles.tarjeta}
 
             onPress={() =>
-              abrirReceta(item)
+              navigation.navigate(
+                `receta-${item.id}`
+              )
             }
-          >
 
-            {/* FOTO */}
+          >
 
             {item.foto ? (
 
               <Image
+
                 source={{
                   uri: item.foto,
                 }}
@@ -681,6 +754,7 @@ function InicioScreen({
                 style={
                   styles.fotoTarjeta
                 }
+
               />
 
             ) : (
@@ -701,8 +775,6 @@ function InicioScreen({
 
             )}
 
-
-            {/* INFORMACIÓN */}
 
             <View
               style={styles.infoTarjeta}
@@ -749,13 +821,203 @@ function InicioScreen({
 
 
 // ==================================================
-// NUEVA RECETA
+// DETALLE DE RECETA
+// ==================================================
+
+function DetalleRecetaScreen({
+  receta,
+  navigation,
+  onEditar,
+  onEliminar,
+}) {
+
+  return (
+
+    <ScrollView
+      style={styles.contenedor}
+    >
+
+      {/* FOTO */}
+
+      {receta.foto ? (
+
+        <Image
+          source={{
+            uri: receta.foto,
+          }}
+
+          style={
+            styles.fotoDetalle
+          }
+        />
+
+      ) : (
+
+        <View
+          style={styles.fotoDetalleVacia}
+        >
+
+          <Text
+            style={{
+              fontSize: 55,
+            }}
+          >
+            🍽️
+          </Text>
+
+        </View>
+
+      )}
+
+
+      {/* NOMBRE */}
+
+      <Text
+        style={styles.tituloDetalle}
+      >
+        {receta.nombre}
+      </Text>
+
+
+      {/* DESCRIPCIÓN */}
+
+      {receta.descripcion ? (
+
+        <Text
+          style={styles.descripcion}
+        >
+          {receta.descripcion}
+        </Text>
+
+      ) : null}
+
+
+      {/* INGREDIENTES */}
+
+      <Text
+        style={styles.subtitulo}
+      >
+        🥕 Ingredientes
+      </Text>
+
+
+      {receta.ingredientes.map(
+        (ingrediente, indice) => (
+
+          <Text
+            key={indice}
+            style={styles.elementoLista}
+          >
+            • {ingrediente}
+          </Text>
+
+        )
+      )}
+
+
+      {/* PREPARACIÓN */}
+
+      <Text
+        style={styles.subtitulo}
+      >
+        👨‍🍳 Preparación
+      </Text>
+
+
+      {receta.pasos.map(
+        (paso, indice) => (
+
+          <View
+            key={indice}
+            style={styles.pasoDetalle}
+          >
+
+            <Text
+              style={styles.numeroPaso}
+            >
+              {indice + 1}
+            </Text>
+
+
+            <Text
+              style={styles.textoPaso}
+            >
+              {paso}
+            </Text>
+
+          </View>
+
+        )
+      )}
+
+
+      {/* EDITAR */}
+
+      <TouchableOpacity
+
+        style={styles.botonPrincipal}
+
+        onPress={onEditar}
+
+      >
+
+        <Text
+          style={styles.textoBoton}
+        >
+          ✏️ Editar receta
+        </Text>
+
+      </TouchableOpacity>
+
+
+      {/* ELIMINAR */}
+
+      <TouchableOpacity
+
+        style={styles.botonEliminar}
+
+        onPress={onEliminar}
+
+      >
+
+        <Text
+          style={styles.textoBoton}
+        >
+          🗑️ Eliminar receta
+        </Text>
+
+      </TouchableOpacity>
+
+
+      <View
+        style={{
+          height: 40,
+        }}
+      />
+
+    </ScrollView>
+  );
+}
+
+
+// ==================================================
+// NUEVA / EDITAR RECETA
 // ==================================================
 
 function NuevaRecetaScreen({
   navigation,
+  modo,
+  recetaEditar,
   onGuardar,
 }) {
+
+  const esEdicion =
+    modo === 'editar';
+
+
+  // ================================================
+  // ESTADOS
+  // ================================================
 
   const [nombre, setNombre] =
     useState('');
@@ -773,9 +1035,73 @@ function NuevaRecetaScreen({
     useState(null);
 
 
-  // --------------------------------------------------
+  // ================================================
+  // CARGAR DATOS
+  // ================================================
+
+  useEffect(() => {
+
+    if (
+      esEdicion &&
+      recetaEditar
+    ) {
+
+      setNombre(
+        recetaEditar.nombre || ''
+      );
+
+
+      setDescripcion(
+        recetaEditar.descripcion || ''
+      );
+
+
+      setIngredientes(
+        recetaEditar.ingredientes?.length
+          ? recetaEditar.ingredientes
+          : ['']
+      );
+
+
+      setPasos(
+        recetaEditar.pasos?.length
+          ? recetaEditar.pasos
+          : ['']
+      );
+
+
+      setFoto(
+        recetaEditar.foto || null
+      );
+
+    } else {
+
+      // ==========================================
+      // IMPORTANTE:
+      // FORMULARIO NUEVO COMPLETAMENTE VACÍO
+      // ==========================================
+
+      setNombre('');
+
+      setDescripcion('');
+
+      setIngredientes(['']);
+
+      setPasos(['']);
+
+      setFoto(null);
+
+    }
+
+  }, [
+    esEdicion,
+    recetaEditar,
+  ]);
+
+
+  // ================================================
   // TOMAR FOTO
-  // --------------------------------------------------
+  // ================================================
 
   async function tomarFoto() {
 
@@ -812,13 +1138,14 @@ function NuevaRecetaScreen({
       setFoto(
         resultado.assets[0].uri
       );
+
     }
   }
 
 
-  // --------------------------------------------------
+  // ================================================
   // GALERÍA
-  // --------------------------------------------------
+  // ================================================
 
   async function elegirFoto() {
 
@@ -840,13 +1167,14 @@ function NuevaRecetaScreen({
       setFoto(
         resultado.assets[0].uri
       );
+
     }
   }
 
 
-  // --------------------------------------------------
-  // ACTUALIZAR INGREDIENTES / PASOS
-  // --------------------------------------------------
+  // ================================================
+  // ACTUALIZAR ELEMENTO
+  // ================================================
 
   function actualizarElemento(
     lista,
@@ -859,6 +1187,7 @@ function NuevaRecetaScreen({
 
       lista.map(
         (elemento, i) =>
+
           i === indice
             ? valor
             : elemento
@@ -868,9 +1197,9 @@ function NuevaRecetaScreen({
   }
 
 
-  // --------------------------------------------------
+  // ================================================
   // GUARDAR
-  // --------------------------------------------------
+  // ================================================
 
   async function guardar() {
 
@@ -890,7 +1219,9 @@ function NuevaRecetaScreen({
         .filter(Boolean);
 
 
-    // Validación nombre
+    // ==========================================
+    // VALIDACIONES
+    // ==========================================
 
     if (!nombre.trim()) {
 
@@ -903,30 +1234,43 @@ function NuevaRecetaScreen({
     }
 
 
-    // Validación ingredientes y pasos
-
     if (
-      ingredientesValidos.length === 0 ||
-      pasosValidos.length === 0
+      ingredientesValidos.length === 0
     ) {
 
       Alert.alert(
-        'Receta incompleta',
-        'Agrega al menos un ingrediente y un paso de preparación.'
+        'Faltan ingredientes',
+        'Agrega al menos un ingrediente.'
       );
 
       return;
     }
 
 
-    // Crear receta
+    if (
+      pasosValidos.length === 0
+    ) {
+
+      Alert.alert(
+        'Falta la preparación',
+        'Agrega al menos un paso.'
+      );
+
+      return;
+    }
+
+
+    // ==========================================
+    // RECETA
+    // ==========================================
 
     const receta = {
 
-      id:
-        `${Date.now()}-${Math.random()
-          .toString(36)
-          .slice(2, 8)}`,
+      id: esEdicion
+        ? recetaEditar.id
+        : `${Date.now()}-${Math.random()
+            .toString(36)
+            .slice(2, 8)}`,
 
       nombre:
         nombre.trim(),
@@ -942,11 +1286,19 @@ function NuevaRecetaScreen({
 
       foto,
 
-      fecha:
+      fecha: esEdicion
+        ? recetaEditar.fecha
+        : new Date().toISOString(),
+
+      fechaModificacion:
         new Date().toISOString(),
 
     };
 
+
+    // ==========================================
+    // GUARDAR / ACTUALIZAR
+    // ==========================================
 
     await onGuardar(
       receta,
@@ -955,45 +1307,68 @@ function NuevaRecetaScreen({
   }
 
 
-  // --------------------------------------------------
+  // ================================================
   // INTERFAZ
-  // --------------------------------------------------
+  // ================================================
 
   return (
 
     <KeyboardAvoidingView
-      style={{ flex: 1 }}
+
+      style={{
+        flex: 1,
+      }}
 
       behavior={
         Platform.OS === 'ios'
           ? 'padding'
           : undefined
       }
+
     >
 
       <ScrollView
+
         style={styles.contenedor}
 
         keyboardShouldPersistTaps="handled"
+
       >
 
+        {/* TÍTULO */}
+
         <Text style={styles.etiqueta}>
-          NUEVA CREACIÓN
+
+          {esEdicion
+            ? 'EDITANDO RECETA'
+            : 'NUEVA CREACIÓN'}
+
         </Text>
 
 
         <Text style={styles.titulo}>
-          Mi nueva receta ✍️
+
+          {esEdicion
+            ? 'Editar receta ✏️'
+            : 'Mi nueva receta ✍️'}
+
         </Text>
 
 
         <Text style={styles.descripcion}>
-          Anota los ingredientes, describe
-          la preparación y agrega una foto.
+
+          {esEdicion
+
+            ? 'Modifica los ingredientes, pasos o fotografía de tu receta.'
+
+            : 'Anota los ingredientes, describe la preparación y agrega una foto.'}
+
         </Text>
 
 
-        {/* NOMBRE */}
+        {/* ========================================
+            NOMBRE
+        ======================================== */}
 
         <Text
           style={styles.etiquetaCampo}
@@ -1003,6 +1378,7 @@ function NuevaRecetaScreen({
 
 
         <TextInput
+
           style={styles.input}
 
           placeholder="Ej. Pasta a la boloñesa"
@@ -1012,10 +1388,13 @@ function NuevaRecetaScreen({
           value={nombre}
 
           onChangeText={setNombre}
+
         />
 
 
-        {/* DESCRIPCIÓN */}
+        {/* ========================================
+            DESCRIPCIÓN
+        ======================================== */}
 
         <Text
           style={styles.etiquetaCampo}
@@ -1025,6 +1404,7 @@ function NuevaRecetaScreen({
 
 
         <TextInput
+
           style={[
             styles.input,
             styles.inputMultilinea,
@@ -1039,10 +1419,13 @@ function NuevaRecetaScreen({
           onChangeText={setDescripcion}
 
           multiline
+
         />
 
 
-        {/* INGREDIENTES */}
+        {/* ========================================
+            INGREDIENTES
+        ======================================== */}
 
         <Text
           style={styles.subtitulo}
@@ -1060,6 +1443,7 @@ function NuevaRecetaScreen({
             >
 
               <TextInput
+
                 style={[
                   styles.input,
                   styles.inputFlexible,
@@ -1082,12 +1466,14 @@ function NuevaRecetaScreen({
                     valor
                   )
                 }
+
               />
 
 
               {ingredientes.length > 1 && (
 
                 <TouchableOpacity
+
                   onPress={() =>
                     setIngredientes(
                       ingredientes.filter(
@@ -1096,6 +1482,7 @@ function NuevaRecetaScreen({
                       )
                     )
                   }
+
                 >
 
                   <Text
@@ -1115,6 +1502,7 @@ function NuevaRecetaScreen({
 
 
         <TouchableOpacity
+
           style={styles.botonSecundario}
 
           onPress={() =>
@@ -1123,6 +1511,7 @@ function NuevaRecetaScreen({
               '',
             ])
           }
+
         >
 
           <Text
@@ -1134,7 +1523,9 @@ function NuevaRecetaScreen({
         </TouchableOpacity>
 
 
-        {/* PASOS */}
+        {/* ========================================
+            PASOS
+        ======================================== */}
 
         <Text
           style={styles.subtitulo}
@@ -1159,6 +1550,7 @@ function NuevaRecetaScreen({
 
 
               <TextInput
+
                 style={[
                   styles.input,
                   styles.inputFlexible,
@@ -1183,12 +1575,14 @@ function NuevaRecetaScreen({
                 }
 
                 multiline
+
               />
 
 
               {pasos.length > 1 && (
 
                 <TouchableOpacity
+
                   onPress={() =>
                     setPasos(
                       pasos.filter(
@@ -1197,6 +1591,7 @@ function NuevaRecetaScreen({
                       )
                     )
                   }
+
                 >
 
                   <Text
@@ -1216,6 +1611,7 @@ function NuevaRecetaScreen({
 
 
         <TouchableOpacity
+
           style={styles.botonSecundario}
 
           onPress={() =>
@@ -1224,6 +1620,7 @@ function NuevaRecetaScreen({
               '',
             ])
           }
+
         >
 
           <Text
@@ -1235,7 +1632,9 @@ function NuevaRecetaScreen({
         </TouchableOpacity>
 
 
-        {/* FOTOGRAFÍA */}
+        {/* ========================================
+            FOTOGRAFÍA
+        ======================================== */}
 
         <Text
           style={styles.subtitulo}
@@ -1247,6 +1646,7 @@ function NuevaRecetaScreen({
         {foto ? (
 
           <Image
+
             source={{
               uri: foto,
             }}
@@ -1254,6 +1654,7 @@ function NuevaRecetaScreen({
             style={
               styles.fotoFormulario
             }
+
           />
 
         ) : (
@@ -1283,12 +1684,12 @@ function NuevaRecetaScreen({
         )}
 
 
-        {/* CÁMARA */}
-
         <TouchableOpacity
+
           style={styles.botonSecundario}
 
           onPress={tomarFoto}
+
         >
 
           <Text
@@ -1300,12 +1701,12 @@ function NuevaRecetaScreen({
         </TouchableOpacity>
 
 
-        {/* GALERÍA */}
-
         <TouchableOpacity
+
           style={styles.botonSecundario}
 
           onPress={elegirFoto}
+
         >
 
           <Text
@@ -1316,8 +1717,6 @@ function NuevaRecetaScreen({
 
         </TouchableOpacity>
 
-
-        {/* QUITAR FOTO */}
 
         {foto && (
 
@@ -1338,18 +1737,26 @@ function NuevaRecetaScreen({
         )}
 
 
-        {/* GUARDAR */}
+        {/* ========================================
+            GUARDAR
+        ======================================== */}
 
         <TouchableOpacity
+
           style={styles.botonPrincipal}
 
           onPress={guardar}
+
         >
 
           <Text
             style={styles.textoBoton}
           >
-            Guardar receta
+
+            {esEdicion
+              ? 'Guardar cambios'
+              : 'Guardar receta'}
+
           </Text>
 
         </TouchableOpacity>
@@ -1374,9 +1781,9 @@ function NuevaRecetaScreen({
 
 const styles = StyleSheet.create({
 
-  // ------------------------------------------------
+  // ================================================
   // LOADING
-  // ------------------------------------------------
+  // ================================================
 
   loadingContainer: {
     flex: 1,
@@ -1396,7 +1803,8 @@ const styles = StyleSheet.create({
 
 
   loadingTitle: {
-    color: colores.oscuro,
+    color:
+      colores.oscuro,
 
     fontSize: 30,
 
@@ -1407,7 +1815,8 @@ const styles = StyleSheet.create({
 
 
   loadingText: {
-    color: colores.secundario,
+    color:
+      colores.secundario,
 
     fontSize: 14,
 
@@ -1415,9 +1824,9 @@ const styles = StyleSheet.create({
   },
 
 
-  // ------------------------------------------------
+  // ================================================
   // GENERAL
-  // ------------------------------------------------
+  // ================================================
 
   contenedor: {
     flex: 1,
@@ -1429,20 +1838,9 @@ const styles = StyleSheet.create({
   },
 
 
-  modal: {
-    flex: 1,
-
-    backgroundColor:
-      colores.fondo,
-
-    padding: 20,
-
-    paddingTop: 45,
-  },
-
-
   etiqueta: {
-    color: colores.principal,
+    color:
+      colores.principal,
 
     fontSize: 11,
 
@@ -1457,7 +1855,8 @@ const styles = StyleSheet.create({
 
 
   titulo: {
-    color: colores.oscuro,
+    color:
+      colores.oscuro,
 
     fontSize: 30,
 
@@ -1468,7 +1867,8 @@ const styles = StyleSheet.create({
 
 
   tituloDetalle: {
-    color: colores.oscuro,
+    color:
+      colores.oscuro,
 
     fontSize: 30,
 
@@ -1479,7 +1879,8 @@ const styles = StyleSheet.create({
 
 
   descripcion: {
-    color: colores.secundario,
+    color:
+      colores.secundario,
 
     fontSize: 14,
 
@@ -1489,9 +1890,9 @@ const styles = StyleSheet.create({
   },
 
 
-  // ------------------------------------------------
+  // ================================================
   // BOTONES
-  // ------------------------------------------------
+  // ================================================
 
   botonPrincipal: {
     backgroundColor:
@@ -1538,21 +1939,6 @@ const styles = StyleSheet.create({
   },
 
 
-  botonVolver: {
-    paddingVertical: 12,
-  },
-
-
-  textoBotonVolver: {
-    color:
-      colores.principal,
-
-    fontSize: 15,
-
-    fontWeight: '700',
-  },
-
-
   botonEliminar: {
     backgroundColor:
       colores.peligro,
@@ -1563,18 +1949,19 @@ const styles = StyleSheet.create({
 
     alignItems: 'center',
 
-    marginTop: 30,
+    marginTop: 10,
 
     marginBottom: 25,
   },
 
 
-  // ------------------------------------------------
-  // TÍTULOS
-  // ------------------------------------------------
+  // ================================================
+  // TEXTOS
+  // ================================================
 
   subtitulo: {
-    color: colores.oscuro,
+    color:
+      colores.oscuro,
 
     fontSize: 20,
 
@@ -1591,7 +1978,8 @@ const styles = StyleSheet.create({
 
     fontWeight: '700',
 
-    color: colores.oscuro,
+    color:
+      colores.oscuro,
 
     marginTop: 14,
 
@@ -1599,9 +1987,9 @@ const styles = StyleSheet.create({
   },
 
 
-  // ------------------------------------------------
-  // LISTA
-  // ------------------------------------------------
+  // ================================================
+  // TARJETAS
+  // ================================================
 
   lista: {
     paddingBottom: 25,
@@ -1655,7 +2043,8 @@ const styles = StyleSheet.create({
   nombreTarjeta: {
     fontSize: 19,
 
-    color: colores.oscuro,
+    color:
+      colores.oscuro,
 
     fontWeight: '800',
 
@@ -1683,9 +2072,9 @@ const styles = StyleSheet.create({
   },
 
 
-  // ------------------------------------------------
+  // ================================================
   // LISTA VACÍA
-  // ------------------------------------------------
+  // ================================================
 
   vacio: {
     alignItems: 'center',
@@ -1713,9 +2102,9 @@ const styles = StyleSheet.create({
   },
 
 
-  // ------------------------------------------------
+  // ================================================
   // INPUTS
-  // ------------------------------------------------
+  // ================================================
 
   input: {
     backgroundColor:
@@ -1788,9 +2177,9 @@ const styles = StyleSheet.create({
   },
 
 
-  // ------------------------------------------------
+  // ================================================
   // PASOS
-  // ------------------------------------------------
+  // ================================================
 
   numeroPaso: {
     color:
@@ -1839,9 +2228,9 @@ const styles = StyleSheet.create({
   },
 
 
-  // ------------------------------------------------
-  // FOTOGRAFÍAS
-  // ------------------------------------------------
+  // ================================================
+  // FOTOS
+  // ================================================
 
   areaFoto: {
     backgroundColor:
@@ -1874,6 +2263,22 @@ const styles = StyleSheet.create({
     height: 260,
 
     borderRadius: 16,
+  },
+
+
+  fotoDetalleVacia: {
+    width: '100%',
+
+    height: 200,
+
+    borderRadius: 16,
+
+    backgroundColor:
+      '#EAEDE3',
+
+    alignItems: 'center',
+
+    justifyContent: 'center',
   },
 
 
