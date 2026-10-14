@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="24dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="MENÚ PRINCIPAL"
+        android:textSize="26sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="30dp"/>
+
+    <Button
+        android:id="@+id/btnActividad1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Sumar números"/>
+
+    <Button
+        android:id="@+id/btnActividad2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Mostrar nombre"/>
+
+    <Button
+        android:id="@+id/btnActividad3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Mostrar mensaje"/>
+
+</LinearLayout>
