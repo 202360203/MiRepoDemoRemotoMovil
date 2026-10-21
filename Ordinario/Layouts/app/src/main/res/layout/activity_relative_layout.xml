@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="20dp">
+
+    <TextView
+        android:id="@+id/tituloRelative"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="RelativeLayout"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="30dp"/>
+
+    <TextView
+        android:id="@+id/textoRelative"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Este texto está debajo del título."
+        android:layout_below="@id/tituloRelative"
+        android:layout_marginTop="20dp"/>
+
+    <Button
+        android:id="@+id/btnRelativeEjemplo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Botón inferior"
+        android:layout_below="@id/textoRelative"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Estoy abajo a la derecha"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginBottom="20dp"/>
+
+</RelativeLayout>

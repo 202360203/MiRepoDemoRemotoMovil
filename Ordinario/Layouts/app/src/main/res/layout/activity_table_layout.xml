@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:stretchColumns="*">
+
+        <TableRow
+            android:background="#1565C0">
+
+            <TextView
+                android:padding="10dp"
+                android:text="Alumno"
+                android:textColor="#FFFFFF"
+                android:textStyle="bold"/>
+
+            <TextView
+                android:padding="10dp"
+                android:text="Materia"
+                android:textColor="#FFFFFF"
+                android:textStyle="bold"/>
+
+            <TextView
+                android:padding="10dp"
+                android:text="Nota"
+                android:textColor="#FFFFFF"
+                android:textStyle="bold"/>
+
+        </TableRow>
+
+        <TableRow>
+            <TextView
+                android:padding="10dp"
+                android:text="Ana"/>
+
+            <TextView
+                android:padding="10dp"
+                android:text="Java"/>
+
+            <TextView
+                android:padding="10dp"
+                android:text="9"/>
+        </TableRow>
+
+        <TableRow
+            android:background="#E3F2FD">
+
+            <TextView
+                android:padding="10dp"
+                android:text="Luis"/>
+
+            <TextView
+                android:padding="10dp"
+                android:text="XML"/>
+
+            <TextView
+                android:padding="10dp"
+                android:text="8"/>
+        </TableRow>
+
+        <TableRow>
+            <TextView
+                android:padding="10dp"
+                android:text="Marta"/>
+
+            <TextView
+                android:padding="10dp"
+                android:text="Android"/>
+
+            <TextView
+                android:padding="10dp"
+                android:text="10"/>
+        </TableRow>
+
+    </TableLayout>
+
+</ScrollView>
