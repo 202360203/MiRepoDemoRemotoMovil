@@ -1,6 +1,5 @@
 package com.example.clonewhatsapp;
 
-
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
@@ -15,7 +14,7 @@ import retrofit2.Response;
 
 public class RegisterActivity extends AppCompatActivity {
 
-    private EditText etEmail, etPassword;
+    private EditText etName, etEmail, etPassword;
     private Button btnRegister;
 
     private AuthRepository authRepository;
@@ -25,6 +24,7 @@ public class RegisterActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
+        etName = findViewById(R.id.etName);
         etEmail = findViewById(R.id.etEmail);
         etPassword = findViewById(R.id.etPassword);
         btnRegister = findViewById(R.id.btnRegister);
@@ -36,10 +36,11 @@ public class RegisterActivity extends AppCompatActivity {
 
     private void registrarUsuario() {
 
+        String nombre = etName.getText().toString().trim();
         String email = etEmail.getText().toString().trim();
         String password = etPassword.getText().toString();
 
-        if (email.isEmpty() || password.isEmpty()) {
+        if (nombre.isEmpty() || email.isEmpty() || password.isEmpty()) {
             Toast.makeText(this,
                     "Completa todos los campos",
                     Toast.LENGTH_SHORT).show();
@@ -55,7 +56,10 @@ public class RegisterActivity extends AppCompatActivity {
 
         btnRegister.setEnabled(false);
 
-        authRepository.registrar(email, password,
+        authRepository.registrar(
+                nombre,
+                email,
+                password,
                 new Callback<AuthResponse>() {
 
                     @Override
@@ -82,9 +86,19 @@ public class RegisterActivity extends AppCompatActivity {
 
                         } else {
 
+                            String error = "Error al registrar. Código: "
+                                    + response.code();
+
+                            if (response.errorBody() != null) {
+                                try {
+                                    error += "\n" + response.errorBody().string();
+                                } catch (Exception ignored) {
+                                }
+                            }
+
                             Toast.makeText(
                                     RegisterActivity.this,
-                                    "Error al registrar. Verifica el correo o la contraseña.",
+                                    error,
                                     Toast.LENGTH_LONG
                             ).show();
                         }
@@ -103,7 +117,7 @@ public class RegisterActivity extends AppCompatActivity {
                                 Toast.LENGTH_LONG
                         ).show();
                     }
-                });
+                }
+        );
     }
 }
-

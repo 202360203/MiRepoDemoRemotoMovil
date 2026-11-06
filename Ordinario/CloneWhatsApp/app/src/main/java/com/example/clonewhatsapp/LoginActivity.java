@@ -1,5 +1,5 @@
-package com.example.clonewhatsapp;
 
+package com.example.clonewhatsapp;
 
 import android.os.Bundle;
 import android.widget.Button;
@@ -23,7 +23,6 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_login);
 
         etEmail = findViewById(R.id.etEmail);
@@ -38,7 +37,7 @@ public class LoginActivity extends AppCompatActivity {
 
         btnGoRegister.setOnClickListener(v -> {
             startActivity(new Intent(
-                    this,
+                    LoginActivity.this,
                     RegisterActivity.class
             ));
         });
@@ -70,9 +69,9 @@ public class LoginActivity extends AppCompatActivity {
 
                         btnLogin.setEnabled(true);
 
-                        if (response.isSuccessful() &&
-                                response.body() != null &&
-                                response.body().accessToken != null) {
+                        if (response.isSuccessful()
+                                && response.body() != null
+                                && response.body().accessToken != null) {
 
                             Toast.makeText(
                                     LoginActivity.this,
@@ -80,9 +79,16 @@ public class LoginActivity extends AppCompatActivity {
                                     Toast.LENGTH_SHORT
                             ).show();
 
-                            // Después conectaremos aquí MainActivity.
+                            Intent intent = new Intent(
+                                    LoginActivity.this,
+                                    ContactsActivity.class
+                            );
+
+                            startActivity(intent);
+                            finish();
 
                         } else {
+
                             Toast.makeText(
                                     LoginActivity.this,
                                     "No se pudo iniciar sesión",
@@ -104,6 +110,7 @@ public class LoginActivity extends AppCompatActivity {
                                 Toast.LENGTH_LONG
                         ).show();
                     }
-                });
+                }
+        );
     }
 }

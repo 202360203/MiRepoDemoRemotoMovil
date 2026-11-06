@@ -21,15 +21,17 @@ public class AuthRepository {
         apiKey = SupabaseConfig.SUPABASE_KEY;
     }
 
+
     // REGISTRO
     public void registrar(
+            String nombre,
             String email,
             String password,
             Callback<AuthResponse> callback) {
 
         api.registrar(
                 apiKey,
-                new AuthRequest(email, password)
+                new AuthRequest(email, password, nombre)
         ).enqueue(new Callback<AuthResponse>() {
 
             @Override
@@ -56,6 +58,7 @@ public class AuthRepository {
             }
         });
     }
+
 
     // INICIO DE SESIÓN
     public void iniciarSesion(
