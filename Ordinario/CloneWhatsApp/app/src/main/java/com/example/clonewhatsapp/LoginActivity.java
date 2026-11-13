@@ -1,9 +1,9 @@
-
 package com.example.clonewhatsapp;
 
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.content.Intent;
 
@@ -17,6 +17,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private EditText etEmail, etPassword;
     private Button btnLogin, btnGoRegister;
+    private TextView tvRecover;
 
     private AuthRepository authRepository;
 
@@ -30,17 +31,23 @@ public class LoginActivity extends AppCompatActivity {
 
         btnLogin = findViewById(R.id.btnLogin);
         btnGoRegister = findViewById(R.id.btnGoRegister);
+        tvRecover = findViewById(R.id.tvRecover);
 
         authRepository = new AuthRepository(this);
 
+        // Iniciar sesión
         btnLogin.setOnClickListener(v -> iniciarSesion());
 
+        // Ir al registro
         btnGoRegister.setOnClickListener(v -> {
             startActivity(new Intent(
                     LoginActivity.this,
                     RegisterActivity.class
             ));
         });
+
+        // Recuperar contraseña
+        tvRecover.setOnClickListener(v -> recuperarPassword());
     }
 
     private void iniciarSesion() {
@@ -88,7 +95,6 @@ public class LoginActivity extends AppCompatActivity {
                             finish();
 
                         } else {
-
                             Toast.makeText(
                                     LoginActivity.this,
                                     "No se pudo iniciar sesión",
@@ -107,6 +113,79 @@ public class LoginActivity extends AppCompatActivity {
                         Toast.makeText(
                                 LoginActivity.this,
                                 "Error: " + t.getMessage(),
+                                Toast.LENGTH_LONG
+                        ).show();
+                    }
+                }
+        );
+    }
+
+    private void recuperarPassword() {
+
+        String email = etEmail.getText().toString().trim();
+
+        if (email.isEmpty()) {
+            etEmail.setError("Escribe tu correo electrónico");
+            etEmail.requestFocus();
+            return;
+        }
+
+        tvRecover.setEnabled(false);
+
+        authRepository.recuperarPassword(
+                email,
+                new Callback<Void>() {
+
+                    @Override
+                    public void onResponse(
+                            Call<Void> call,
+                            Response<Void> response) {
+
+                        tvRecover.setEnabled(true);
+
+                        if (response.isSuccessful()) {
+
+                            Toast.makeText(
+                                    LoginActivity.this,
+                                    "Solicitud enviada. Revisa tu correo electrónico.",
+                                    Toast.LENGTH_LONG
+                            ).show();
+
+                        } else {
+
+                        String detalle = "";
+
+                        try {
+                            if (response.errorBody() != null) {
+                                detalle = response.errorBody().string();
+                            }
+                        } catch (Exception e) {
+                            detalle = e.getMessage();
+                        }
+
+                        Toast.makeText(
+                                LoginActivity.this,
+                                "Error " + response.code() + ": " + detalle,
+                                Toast.LENGTH_LONG
+                        ).show();
+
+                        android.util.Log.e(
+                                "RECUPERAR_PASSWORD",
+                                "Error Supabase: " + detalle
+                        );
+                    }
+                    }
+
+                    @Override
+                    public void onFailure(
+                            Call<Void> call,
+                            Throwable t) {
+
+                        tvRecover.setEnabled(true);
+
+                        Toast.makeText(
+                                LoginActivity.this,
+                                "Error de conexión: " + t.getMessage(),
                                 Toast.LENGTH_LONG
                         ).show();
                     }
